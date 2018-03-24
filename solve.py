@@ -1,4 +1,5 @@
-# coding:utf-8
+#!/usr/bin/env python2
+# -*- coding:utf-8 -*-
 import argparse
 from Crypto.PublicKey import RSA
 import subprocess
@@ -58,7 +59,7 @@ if __name__ == "__main__":
     group1.add_argument(
         '--decrypt', help='decrypt a file, usually like "flag.enc"', default=None)
     group1.add_argument(
-        '-c', '--decrypt_int', type=long, help='decrypt a long int num', default=None)
+        '-c', '--decrypt_int', type=str, help='decrypt a long int num', default=None)
     group1.add_argument(
         '--private', help='Print private key if recovered', action='store_true')
     group1.add_argument(
@@ -82,18 +83,18 @@ if __name__ == "__main__":
         title='the RSA variables', description='Specify the variables whatever you got')
     group3.add_argument(
         '-k', '--key', help='pem file, usually like ".pub" or ".pem", and it begins with "-----BEGIN"')
-    group3.add_argument('-N', type=long, help='the modulus')
-    group3.add_argument('-e', type=long, help='the public exponent')
-    group3.add_argument('-d', type=long, help='the private exponent')
-    group3.add_argument('-p', type=long, help='one factor of modulus')
-    group3.add_argument('-q', type=long, help='one factor of modulus')
+    group3.add_argument('-N', type=str, help='the modulus')
+    group3.add_argument('-e', type=str, help='the public exponent')
+    group3.add_argument('-d', type=str, help='the private exponent')
+    group3.add_argument('-p', type=str, help='one factor of modulus')
+    group3.add_argument('-q', type=str, help='one factor of modulus')
 
     # group4用于指定一特殊方法中所需要的额外参数
     group4 = parser.add_argument_group(
         title='extra variables', description='Used in some special methods')
-    group4.add_argument('--KHBFA', type=long,
+    group4.add_argument('--KHBFA', type=str,
                         help='use Known High Bits Factor Attack, this specify the High Bits of factor', default=None)
-    group4.add_argument('--pbits', type=long,
+    group4.add_argument('--pbits', type=str,
                         help='customize the bits lenth of factor, default is half of n`s bits lenth', default=None)
 
     parser.add_argument(
@@ -101,6 +102,16 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # if createpub mode generate public key then quit
+    # convert hex to oct if necessary
+    # for name in dir(args):
+    for name in ['N', 'e', 'd', 'p', 'q', 'KHBFA', 'pbits', 'c']:
+        try:
+            value = args.__getattribute__(name)
+            if value and value.startswith('0x'):
+                args.__setattr__(name, int(value, 16))
+        except AttributeError:
+            pass
+
     if args.createpub:
         if args.N is None or args.e is None:
             raise Exception(

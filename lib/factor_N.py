@@ -6,6 +6,7 @@ import subprocess
 import libnum
 import RSAutils
 import signal
+import sys
 
 
 log = RSAutils.log
@@ -49,7 +50,8 @@ def factordb(N):
             eq = map(int, [k, j, sub])
             return pow(eq[0], eq[1]) - eq[2]
         except Exception as e:
-            log.debug("FactorDB gave something we couldn't parse sorry (%s). Got error: %s" % (equation, e))
+            log.debug("FactorDB gave something we couldn't parse sorry (%s). Got error: %s" % (
+                equation, e))
             raise FactorizationError()
 
     # Factors available online?
@@ -91,7 +93,7 @@ def noveltyprimes(N):
 
 def pastctfprimes(N):
     log.debug('factor N: try past ctf primes')
-    primes = [long(x) for x in open('lib/pastctfprimes.txt', 'r').readlines(
+    primes = [long(x) for x in open(sys.path[0] + '/lib/pastctfprimes.txt', 'r').readlines(
     ) if not x.startswith('#') and not x.startswith('\n')]
     for prime in primes:
         if N % prime == 0:
@@ -107,7 +109,7 @@ def boneh_durfee(N, e):
     # many of these problems will be solved by the wiener attack module but perhaps some will fall through to here
     # TODO: get an example public key solvable by boneh_durfee but not wiener
     sageresult = int(subprocess.check_output(
-        ['sage', 'lib/boneh_durfee.sage', str(N), str(e)]))
+        ['sage', sys.path[0] + '/lib/boneh_durfee.sage', str(N), str(e)]))
     if sageresult > 0:
         # use PyCrypto _slowmath rsa_construct to resolve p and q from d
         from Crypto.PublicKey import _slowmath
@@ -120,11 +122,12 @@ def boneh_durfee(N, e):
 
 
 def smallfraction(N):
-    log.debug('factor N: try Small fractions method when p/q is close to a small fraction')
+    log.debug(
+        'factor N: try Small fractions method when p/q is close to a small fraction')
     # Code/idea from Renaud Lifchitz's talk 15 ways to break RSA security @ OPCDE17
     # only works if the sageworks() function returned True
     sageresult = int(subprocess.check_output(
-        ['sage', 'lib/smallfraction.sage', str(N)]))
+        ['sage', sys.path[0] + '/lib/smallfraction.sage', str(N)]))
     if sageresult > 0:
         p = sageresult
         q = N / p

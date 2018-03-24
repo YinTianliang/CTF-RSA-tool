@@ -10,6 +10,7 @@ logging.basicConfig(format='\033[92m%(levelname)s\033[0m: %(message)s')
 log = logging.getLogger()
 log.setLevel(logging.INFO)
 import factor_N
+import sys
 
 
 class RSAAttack(object):
@@ -111,10 +112,10 @@ class RSAAttack(object):
                 return
             if self.pbits:
                 sageresult = int(subprocess.check_output(
-                    ['sage', 'lib/KnownHighBitsFactorAttack.sage', str(self.n), str(self.hbop), str(self.pbits)]))
+                    ['sage', sys.path[0] + '/lib/KnownHighBitsFactorAttack.sage', str(self.n), str(self.hbop), str(self.pbits)]))
             else:
                 sageresult = int(subprocess.check_output(
-                    ['sage', 'lib/KnownHighBitsFactorAttack.sage', str(self.n), str(self.hbop)]))
+                    ['sage', sys.path[0] + '/lib/KnownHighBitsFactorAttack.sage', str(self.n), str(self.hbop)]))
             if sageresult > 0:
                 self.p = sageresult
                 self.q = self.n / self.p
