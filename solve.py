@@ -107,8 +107,9 @@ if __name__ == "__main__":
     for name in ['N', 'e', 'd', 'p', 'q', 'KHBFA', 'pbits', 'c']:
         try:
             value = args.__getattribute__(name)
-            if value and value.startswith('0x'):
-                args.__setattr__(name, int(value, 16))
+            if value:
+                args.__setattr__(
+                    name, int(value, 16 if value.startswith('0x') else 10))
         except AttributeError:
             pass
 

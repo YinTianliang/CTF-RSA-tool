@@ -3,3 +3,6 @@ CTF-RSA-tool.sketch
 readme.pdf
 *.pyc
 .DS_Store
+lib/boneh_durfee.sage.py
+lib/smallfraction.sage.py
+
